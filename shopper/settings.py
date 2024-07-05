@@ -40,6 +40,9 @@ INSTALLED_APPS = [
     'core',
     'accounts',
     'products',
+    'psycopg',
+    'social_django',
+    'rest_framework',
 ]
 
 MIDDLEWARE = [
@@ -50,6 +53,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'social_django.middleware.SocialAuthExceptionMiddleware',
 ]
 
 ROOT_URLCONF = 'shopper.urls'
@@ -73,13 +77,32 @@ TEMPLATES = [
 WSGI_APPLICATION = 'shopper.wsgi.application'
 
 
+AUTHENTICATION_BACKENDS = [
+    'social_core.backends.linkedin.LinkedinOAuth2',
+    'social_core.backends.instagram.InstagramOAuth2',
+    'social_core.backends.facebook.FacebookOAuth2',
+    'django.contrib.auth.backends.ModelBackend',
+]
+
+LOGIN_URL = 'login'
+LOGIN_REDIRECT_URL = 'shop'
+LOGOUT_URL = 'logout'
+LOGOUT_REDIRECT_URL = 'login'
+
+SOCIAL_AUTH_FACEBOOK_KEY = 435759265965152      # App ID
+SOCIAL_AUTH_FACEBOOK_SECRET = '293c0491d32686b5bcd8fffca735a4a1' # App Secret
+
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'shopDB',
+        'USER': 'shop_user',
+        'PASSWORD': 'user11920',
+        'HOST': 'localhost',
+        'PORT': 5645
     }
 }
 
@@ -123,8 +146,33 @@ STATIC_URL = 'static/'
 STATICFILES_DIRS = [
     BASE_DIR, 'static'
 ]
+MEDIA_URL='/media/'
+MEDIA_ROOT = BASE_DIR /'uploads'
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+AUTH_USER_MODEL = "accounts.User"
+
+
+from django.contrib.messages import constants as message_constants
+
+MESSAGE_TAGS = {
+     message_constants.DEBUG: 'alert-secondary ', 
+     message_constants.INFO: 'alert-info',
+     message_constants.SUCCESS: 'alert-success',
+     message_constants.WARNING: 'alert-warning',
+     message_constants.ERROR: 'alert-error',
+
+}
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'aksinnezirov49@gmail.com'
+EMAIL_HOST_PASSWORD = 'xbag jdku flzg dwlk'
+EMAIL_USE_TLS = True

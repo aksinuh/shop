@@ -1,6 +1,6 @@
 from django.urls import path
-from .views import contact
+from .views import CantactCreateView
 urlpatterns = [
-    path('cantact/', contact , name= 'cantact'),
+    path('cantact/', CantactCreateView.as_view() , name= 'cantact'),
     
 ]
