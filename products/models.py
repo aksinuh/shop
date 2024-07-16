@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth import get_user_model
 from decimal import Decimal
+from django.urls import reverse_lazy
 # Create your models here.
 
 User = get_user_model()
@@ -14,30 +15,36 @@ class product(models.Model):
         return self.title
     
     
+    
 class discount(models.Model):
-    rate = models.FloatField()
+    rate = models.IntegerField()
     
     
 class detail(models.Model):
     title = models.TextField()
     price = models.DecimalField(max_digits=10, decimal_places=2)
     Description = models.TextField()
-    product = models.ForeignKey("product", on_delete= models.CASCADE)
+    product = models.ForeignKey(product, on_delete= models.CASCADE)
     discount = models.ForeignKey(discount, on_delete=models.CASCADE, null=True, blank=True)
     properties = models.TextField()
     image = models.ImageField(upload_to="product_img")
     color = models.ForeignKey("color",on_delete=models.CASCADE, related_name="produc",null=True,blank=True)
     size = models.ForeignKey("size", on_delete=models.CASCADE, related_name="products",null=True,blank=True)
     display = models.BooleanField(default=True)
+    slug = models.SlugField(null=True, blank=True)
     
     def discounted_price(self):
         if self.discount:
             discount_rate = Decimal(self.discount.rate) / Decimal(100)
-            return self.price * (1 - discount_rate)
+            return round(self.price * (1 - discount_rate),2)
         return self.price
 
     def __str__(self):
         return self.title
+    
+    
+    def get_absolute_url(self):
+        return reverse_lazy("shop_detail", kwargs={"slug": self.slug})
     
 
 class category(models.Model):
@@ -82,7 +89,10 @@ class comment(TimeStamp):
     
 class favorite(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    product = models.ManyToManyField(product)
+    product = models.ForeignKey(detail, on_delete=models.CASCADE, related_name="product_favorite")
     
     def __str__(self):
-        return self.user
+        return self.user.full_name
+    
+    class Meta:
+        unique_together = ('user', 'product')

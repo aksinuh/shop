@@ -27,21 +27,16 @@
                         </tr>
                     </thead>
                     <tbody class="align-middle">
+                        {% for favorite in favorites %}
                         <tr>
-                            <td class="align-middle"><img src="{% static 'img/pr-1.webp'%}" alt="" style="width: 50px;"> Colorful Stylish Shirt 1</td>
-                            <td class="align-middle">$150</td>
-                            <td class="align-middle"><button class="btn btn-sm btn-primary"><i class="fa fa-times"></i></button></td>
+                            <td class="align-middle"><img src="{{favorite.product.product.image.url}}" alt=""  style="width: 50px;"> {{ favorite.product.title }}</td>
+                            <td class="align-middle">{{favorite.product.discounted_price}}</td>
+                            <form method="post" action="{% url 'remove_favorite' favorite.id %}">
+                                {% csrf_token %}
+                                <td class="align-middle"><button class="btn btn-sm btn-primary"><i class="fa fa-times"></i></button></td>
+                        </form>
                         </tr>
-                        <tr>
-                            <td class="align-middle"><img src="{% static 'img/pr-3.webp'%}" alt="" style="width: 50px;"> Colorful Stylish Shirt 2</td>
-                            <td class="align-middle">$140</td>
-                            <td class="align-middle"><button class="btn btn-sm btn-primary"><i class="fa fa-times"></i></button></td>
-                        </tr>
-                        <tr>
-                            <td class="align-middle"><img src="{% static 'img/pr-2.webp'%}" alt="" style="width: 50px;"> Colorful Stylish Shirt 3</td>
-                            <td class="align-middle">$350</td>
-                            <td class="align-middle"><button class="btn btn-sm btn-primary"><i class="fa fa-times"></i></button></td>
-                        </tr>
+                        {% endfor %}
                     </tbody>
                 </table>
             </div>

@@ -37,17 +37,21 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'drf_yasg',
     'core',
     'accounts',
     'products',
     'psycopg',
     'social_django',
     'rest_framework',
+    'rest_framework_simplejwt',
+    "corsheaders",
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    "corsheaders.middleware.CorsMiddleware",
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -55,6 +59,12 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'social_django.middleware.SocialAuthExceptionMiddleware',
 ]
+
+CORS_ALLOWED_ORIGINS = [
+    
+    "http://127.0.0.1:5500",
+]
+
 
 ROOT_URLCONF = 'shopper.urls'
 
@@ -69,6 +79,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'products.context_processors.favorite_count',
             ],
         },
     },
@@ -77,12 +88,31 @@ TEMPLATES = [
 WSGI_APPLICATION = 'shopper.wsgi.application'
 
 
+from datetime import timedelta
+
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(days=1),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
+    "TOKEN_OBTAIN_SERIALIZER": "accounts.api.serializers.UserTokenObtainSerialzier",
+}
 AUTHENTICATION_BACKENDS = [
     'social_core.backends.linkedin.LinkedinOAuth2',
     'social_core.backends.instagram.InstagramOAuth2',
     'social_core.backends.facebook.FacebookOAuth2',
     'django.contrib.auth.backends.ModelBackend',
 ]
+
+
+REST_FRAMEWORK = {
+
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.BasicAuthentication'
+    )
+}
+
 
 LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = 'shop'
@@ -176,3 +206,6 @@ EMAIL_PORT = 587
 EMAIL_HOST_USER = 'aksinnezirov49@gmail.com'
 EMAIL_HOST_PASSWORD = 'xbag jdku flzg dwlk'
 EMAIL_USE_TLS = True
+
+
+"http://127.0.0.1:5500"

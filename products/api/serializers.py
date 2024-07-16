@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from products.models import category,detail
+from products.models import category,detail,product,favorite
 
 class categoryserializers(serializers.ModelSerializer):
     class Meta:
@@ -34,5 +34,40 @@ class detailserializers(serializers.ModelSerializer):
             "category",
         )
         
+class detailCreateserializers(serializers.ModelSerializer):
+    class Meta:
+        model = detail
+        fields = (
+            "title",
+            "price",
+            "Description",
+            "product",
+            "discount",
+            "properties",
+            "color",
+            "size",
+            "display",
+            "image",
+        )
 
 
+class productserializers(serializers.ModelSerializer):
+    class Meta:
+        model = product
+        fields = (
+            "title",
+            "category",
+            "image",
+        )
+
+class favoriteserializers(serializers.ModelSerializer):
+    image = serializers.ImageField(source= "product.image")
+    title = serializers.CharField(source="product.title")
+    price = serializers.FloatField(source="detail.discounted_price")
+    class Meta:
+        model = favorite
+        fields = (
+            "image",
+            "title",
+            "price",
+        )

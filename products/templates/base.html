@@ -81,7 +81,7 @@
             <div class="col-lg-3 col-6 text-right">
                 <a href="{% url "favorites" %}" class="btn border">
                     <i class="fas fa-heart text-primary"></i>
-                    <span class="badge">0</span>
+                    <span class="badge">{{ favorite_count }}</span>
                 </a>
                 <a href="" class="btn border">
                     <i class="fas fa-shopping-cart text-primary"></i>
@@ -107,7 +107,7 @@
                                 <a href="{% url "shop" %}?category={{category.id}}" class="nav-link" data-toggle="dropdown">{{category.name}} <i class="fa fa-angle-down float-right mt-1"></i></a>
                                 <div class="dropdown-menu position-absolute bg-secondary border-0 rounded-0 w-100 m-0">
                                     {% for categor in category.sub_categorys.all %}
-                                    <a href="{% url "shop" %}?category={{category.parent.id}}" class="dropdown-item">{{categor.name}}</a>
+                                    <a href="{% url "shop" %}?category={{categor.id}}" class="dropdown-item">{{categor.name}}</a>
                                     {% endfor %}
                                 </div>
                             </div>

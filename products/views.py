@@ -1,13 +1,17 @@
 from typing import Any
 from django.db.models.query import QuerySet
 from django.shortcuts import render,get_object_or_404
-from .models import detail, product,size,category, color
+from .models import detail, product,size,category, color,favorite
 from django.views.generic import ListView,DetailView
 from .forms import commentform
 from django.views.generic.edit import FormMixin
 from django.urls import reverse_lazy,reverse
 from django.shortcuts import redirect
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth import get_user_model
+from django.contrib.auth.decorators import login_required
 
+user = get_user_model()
 
 # Create your views here.
 # def shop_detail(reguest, id):
@@ -46,16 +50,15 @@ class ShopDetailView(DetailView, FormMixin):
 
     def post(self, request, *args, **kwargs):
         self.object = self.get_object()
-        
         # Kullanıcı giriş yapmamışsa giriş sayfasına yönlendirin
         if not request.user.is_authenticated:
             return redirect('%s?next=%s' % (reverse('login'), request.path))
-        
         form = self.get_form()
         if form.is_valid():
             return self.form_valid(form)
         else:
             return self.form_invalid(form)
+
 
     def form_valid(self, form):
         form.instance.product = self.object
@@ -63,12 +66,32 @@ class ShopDetailView(DetailView, FormMixin):
         form.save()
         return super().form_valid(form)
 
+
     def get_success_url(self) -> str:
-        return reverse("shop_detail", kwargs={"pk": self.object.pk})
+        return reverse("shop_detail", kwargs={"slug": self.object.slug})
 
   
-def favorites(reguest):
-    return render(reguest,"favorites.html" )
+
+@login_required
+def add_to_favorites(request, id):
+    products = get_object_or_404(detail, id=id)
+    favorite.objects.get_or_create(user=request.user, product=products)
+    return redirect(reverse('shop_detail', kwargs={'slug': products.slug}))
+
+@login_required
+def remove_favorite(request, id):
+    favorites = get_object_or_404(favorite, id=id, user=request.user)
+    favorites.delete()
+    return redirect(reverse('favorites'))
+
+@login_required
+def favorites(request):
+    favourite_products = favorite.objects.filter(user=request.user)
+    context = {
+        'favorites': favourite_products
+    }
+    return render(request, 'favorites.html', context=context)
+
 
 
 # def shop(reguest):
